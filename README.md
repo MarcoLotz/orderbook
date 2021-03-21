@@ -1,7 +1,7 @@
 # Coding Challenge: Order Book
 
 ## Overview
-The code provides an implementation of the interface SimpleLevel2ViewTest.
+The code provides an implementation of the interface Level2View.
 
 I also performed an analysis on possible improvements and other strategies that could surely be efficient to solve the problem.
 There's no silver bullet and the applied solution depends on multiple characteristics provided by the data supplier
@@ -127,7 +127,7 @@ A solution to avoid GC freezes while using this kind of structures is changing t
 Of course, over dimensioning memory to avoid GC calls is also a possibility.
 Back in 2015 I used to work on 4TB Ram server to perform some graph processing experiments.
 That amount of RAM costed about £80k by the time and surely only got cheaper.
-Looking quickly, in 2019 is costed about 38k USD already.
+Looking quickly, in 2019 it costed about 38k USD already.
 
 ### Object Pool
 
