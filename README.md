@@ -44,11 +44,11 @@ I personally do not like to use the convention InterfaceNameImpl naming to imple
 Since Java libraries dont use that (there's no ListImpl but a specification detail of the implementation e.g. ArrayList).
 I used the same criteria when implementing the interfaces.
 
-Last but not the least, the provided interface does not contain checked exceptions.
+Last but not least, the provided interface does not contain checked exceptions.
 I have validated the operations on the OrderBook on SimpeLevel2View.class - but I am slightly unsured about this.
 I am not a domain expert, but seems fair to me that the provided interface should have checked exceptions in it.
 Specially since it does seem to be likely that a client of the interface uses it in an incorrect and foreseeable way.
-An example of such mistake would by removing an order that doesn't exist.
+An example of such mistake would be by removing an order that doesn't exist.
 In order to not change the interface itself, I created RuntimeExceptions for those scenarios.
 
 ## Search for the best data structure
@@ -73,12 +73,12 @@ All other operations are O(1) since they are usually mutations on map. I am assu
 I have also pre-allocated for all the data-structures to avoid O(n) operations whenever adding elements due to space allocation.
 
 When doing the research, I have realised that the price levels had an array of orders instead of a Map.
-This performs searches in O(n) time. In my implementation I used a map, that performs O(1) search - but more testing here would be required to make a fair decision here.
-Maybe the array has better cache locality hit overall on processor level and TLB - which in this case the O(n) of the array would perform better tha the O(1) of the map.
+This performs searches in O(n) time. In my implementation I used a map, that performs O(1) search - but more testing here would be required to make a fair decision.
+Maybe the array has better cache locality hit overall on processor level and TLB - which in this case the O(n) of the array would perform better than the O(1) of the map.
 I haven't tested - but this can be easily done.
 
 The price levels are surely going to change over time.
-Due to this, I used Red-Black tree to implement the binary search tree due to its self balancing capabilities.
+Because of this I used Red-Black tree to implement the binary search tree due to its self balancing capabilities.
 
 ```
 Overall:
@@ -142,14 +142,14 @@ The factory would also need to be notified whenever an object is not of my use i
 The default implementation of collections in java is not always the most memory efficient one.
 In fact, I have seen stream operations being avoided by many Red Coders in the past - which could really impact a HFT system.
 In my code I have used the default ones.
-In order to reduce the memory footprint I could have used other implementations as [Chronicle Map](https://github.com/OpenHFT/Chronicle-Map) or [GNU Trove](http://trove4j.sourceforge.net/html/overview.html)
+In order to reduce the memory footprint I could have used other implementations as [Chronicle Map](https://github.com/OpenHFT/Chronicle-Map) or [GNU Trove](http://trove4j.sourceforge.net/html/overview.html).
 I used Trove in the past when creating references to large-scale lookup system.
 By the time, I also used compression (with Kryo) on the map values themselves to improve memory-to-core transference speed - like many [indexing system do](https://nlp.stanford.edu/IR-book/html/htmledition/index-compression-1.html).
 
 ## Parallelism
 ### Thread-safe
 The code is not thread safe.
-In order to be thread safe, the implementations of OrderBook would have be changed to take this requirement into consideration.
+In order to be thread safe, the implementations of OrderBook would have to be changed to take this requirement into consideration.
 
 ### Scaling out
 In the global market, I recall that there are about 20M ISINs.
@@ -174,7 +174,7 @@ There are many scala libraries focused only on that.
 
 ## IT testing to compare the performance
 I would mock the ingested data from the supplier and compare the performance of each implementation of OrderBook for each data supplier.
-Of coursing I would use common benchmarks metrics (like 95 percentile and 99 percentile analysis on operations) and make sure that the system is in stable condition (e.g. warming up cache, enforcing JIT compilation, etc.) 
+Of course I would use common benchmarks metrics (like 95 percentile and 99 percentile analysis on operations) and make sure that the system is in stable condition (e.g. warming up cache, enforcing JIT compilation, etc.) 
 
 # References
 1. [What is an efficient data structure to model an order book](https://quant.stackexchange.com/questions/3783/what-is-an-efficient-data-structure-to-model-order-book)
