@@ -43,7 +43,8 @@ public class TreeOrderBook implements OrderBook {
   private RedBlackNode<BigDecimal> topOrderPrice;
 
   TreeOrderBook(Side side) {
-    this.priceLevelComparator =  side.equals(Side.ASK)? Comparator.naturalOrder() : (Comparator<BigDecimal>) Comparator.naturalOrder().reversed();
+    this.priceLevelComparator =
+        side.equals(Side.ASK) ? Comparator.naturalOrder() : (Comparator<BigDecimal>) Comparator.naturalOrder().reversed();
     priceLevelTree = new RedBlackTree<>(priceLevelComparator);
     orderMap = new HashMap<>(START_NUMBER_OF_ORDERS);
     priceLevelMap = new HashMap<>(START_NUMBER_OF_LEVELS);
@@ -64,7 +65,7 @@ public class TreeOrderBook implements OrderBook {
     if (orderPriceLevel == null) {
       orderPriceLevel = new PriceLevel(order.getPrice());
       priceLevelMap.put(order.getPrice(), orderPriceLevel);
-      RedBlackNode<BigDecimal> insertedNode = priceLevelTree.insert(orderPriceLevel.price); // O (log(n))
+      RedBlackNode<BigDecimal> insertedNode = priceLevelTree.insert(orderPriceLevel.price); // O(log(n))
       if (topOrderPrice == null || priceLevelComparator.compare(topOrderPrice.value, order.getPrice()) > 0) {
         topOrderPrice = insertedNode;
       }
@@ -107,17 +108,7 @@ public class TreeOrderBook implements OrderBook {
     if (parent == null || parent.value == null) { // last order in the book
       topOrderPrice = null;
     } else {
-      if (parent.getLeft() != null && parent.getLeft().value != null) {
-        if (priceLevelComparator.compare(parent.value, parent.getLeft().value) > 0) {
-          topOrderPrice = parent.getLeft();
-        }
-      } else if (parent.getRight() != null && parent.getRight().value != null) {
-        if (priceLevelComparator.compare(parent.value, parent.getRight().value) > 0) {
-          topOrderPrice = parent.getRight();
-        }
-      } else {
-        topOrderPrice = parent;
-      }
+      topOrderPrice = parent;
     }
   }
 

@@ -165,7 +165,7 @@ abstract class BaseOrderBookTest {
     orderBook.addOrder(order);
 
     // When
-    orderBook.replaceOrder(order);
+    orderBook.replaceOrder(order2);
 
     // Then
     assertTrue(orderBook.containsOrder(order2.getId()));
