@@ -8,7 +8,6 @@ public interface Level2Metrics {
 
   long getBookDepth(final Side side); // get the number of price levels on the specified side
 
-  // --> Aka Bid-Ask Spread
   BigDecimal getTopOfBook(final Side side); // get highest bid or lowest ask, resp.
 
 }
