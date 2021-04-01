@@ -1,98 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns="http://maven.apache.org/POM/4.0.0"
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-<modelVersion>4.0.0</modelVersion>
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-<parent>
-  <groupId>com.marcolotz</groupId>
-  <artifactId>marcolotz-parent</artifactId>
-  <version>1.0.0</version>
-  <relativePath/>
-</parent>
+    <parent>
+        <groupId>com.marcolotz</groupId>
+        <artifactId>marcolotz-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath/>
+    </parent>
 
-<groupId>org.example</groupId>
-<artifactId>order-book</artifactId>
-<version>1.0-SNAPSHOT</version>
-<packaging>jar</packaging>
+    <groupId>org.example</groupId>
+    <artifactId>order-book</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-<properties>
-  <maven.compiler.source>13</maven.compiler.source>
-  <maven.compiler.target>13</maven.compiler.target>
-</properties>
+    <properties>
+        <maven.compiler.source>13</maven.compiler.source>
+        <maven.compiler.target>13</maven.compiler.target>
+    </properties>
 
-<dependencies>
-  <dependency>
-    <artifactId>spring-boot-starter-web</artifactId>
-    <exclusions>
-      <exclusion>
-        <artifactId>spring-boot-starter-logging</artifactId>
-        <groupId>org.springframework.boot</groupId>
-      </exclusion>
-    </exclusions>
-    <groupId>org.springframework.boot</groupId>
-  </dependency>
-  <dependency>
-    <artifactId>spring-boot-starter-log4j2</artifactId>
-    <groupId>org.springframework.boot</groupId>
-  </dependency>
-  <dependency>
-    <groupId>org.projectlombok</groupId>
-    <artifactId>lombok</artifactId>
-  </dependency>
+    <dependencies>
+        <dependency>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+            </exclusions>
+            <groupId>org.springframework.boot</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <groupId>org.springframework.boot</groupId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
 
-  <!-- Test dependencies -->
-  <dependency>
-    <artifactId>junit-jupiter-engine</artifactId>
-    <groupId>org.junit.jupiter</groupId>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <artifactId>junit-jupiter-api</artifactId>
-    <groupId>org.junit.jupiter</groupId>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <artifactId>mockito-junit-jupiter</artifactId>
-    <groupId>org.mockito</groupId>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <artifactId>assertj-core</artifactId>
-    <groupId>org.assertj</groupId>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter-params</artifactId>
-    <scope>test</scope>
-  </dependency>
-</dependencies>
+        <!-- Test dependencies -->
+        <dependency>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <artifactId>junit-jupiter-api</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <groupId>org.mockito</groupId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <artifactId>assertj-core</artifactId>
+            <groupId>org.assertj</groupId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-<build>
-  <plugins>
-    <plugin>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-maven-plugin</artifactId>
-      <configuration>
-        <skip>true</skip>
-      </configuration>
-    </plugin>
-  </plugins>
-</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-<repositories>
-  <repository>
-    <id>github</id>
-    <name>GitHub Marco Lotz Public Apache Maven Packages</name>
-    <url>https://maven.pkg.github.com/MarcoLotz/public</url>
-    <releases>
-      <enabled>true</enabled>
-    </releases>
-    <snapshots>
-      <enabled>true</enabled>
-    </snapshots>
-  </repository>
-</repositories>
-
+    <repositories>
+        <repository>
+            <!-- as described here: https://github.community/t/download-from-github-package-registry-without-authentication/14407/110 -->
+            <id>github-public</id>
+            <url>https://public:&#103;hp_ST4DoYjjOdREWwYWLOCCuIgVB5DfhB2YlNe5@maven.pkg.github.com/marcolotz/*</url>
+        </repository>
+    </repositories>
 </project>
