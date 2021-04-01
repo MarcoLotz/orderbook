@@ -1,23 +1,24 @@
 package com.marcolotz.orderbook.port;
 
 import com.marcolotz.orderbook.core.model.Order;
+
 import java.math.BigDecimal;
 
 public interface OrderBook {
 
-  void addOrder(Order order);
+    void addOrder(Order order);
 
-  void removeOrder(final long orderId);
+    void removeOrder(final long orderId);
 
-  void replaceOrder(Order order);
+    void replaceOrder(Order order);
 
-  Order getTopOrder();
+    Order getTopOrder();
 
-  long getSizeForPriceLevel(final BigDecimal price);
+    long getSizeForPriceLevel(final BigDecimal price);
 
-  long getBookDepth();
+    long getBookDepth();
 
-  boolean containsOrder(final long orderId);
+    boolean containsOrder(final long orderId);
 
-  Order getOrderById(long restingOrderId);
+    Order getOrderById(long restingOrderId);
 }

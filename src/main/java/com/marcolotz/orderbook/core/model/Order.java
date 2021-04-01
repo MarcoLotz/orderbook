@@ -1,12 +1,13 @@
 package com.marcolotz.orderbook.core.model;
 
-import java.math.BigDecimal;
 import lombok.Value;
+
+import java.math.BigDecimal;
 
 @Value
 public class Order {
 
-  long id;
-  long quantity;
-  BigDecimal price;
+    long id;
+    long quantity;
+    BigDecimal price;
 }

@@ -10,10 +10,6 @@ import java.math.BigDecimal;
 
 public interface Level2View {
 
-    public enum Side {
-        BID, ASK;
-    }
-
     void onNewOrder(Side side, BigDecimal price, long quantity, long orderId);
 
     void onCancelOrder(long orderId);
@@ -29,4 +25,8 @@ public interface Level2View {
     long getBookDepth(Side side); // get the number of price levels on the specified side
 
     BigDecimal getTopOfBook(Side side); // get highest bid or lowest ask, resp.
+
+    public enum Side {
+        BID, ASK;
+    }
 }

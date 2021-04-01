@@ -6,6 +6,7 @@ import com.marcolotz.orderbook.core.util.RedBlackNode;
 import com.marcolotz.orderbook.core.util.RedBlackTree;
 import com.marcolotz.orderbook.port.OrderBook;
 import com.marcolotz.orderbook.port.Side;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Comparator;
@@ -29,142 +30,142 @@ import java.util.Optional;
  */
 public class TreeOrderBook implements OrderBook {
 
-  private static final int START_NUMBER_OF_ORDERS = 20_000_000;
-  private static final int START_NUMBER_OF_LEVELS = 10_000;
+    private static final int START_NUMBER_OF_ORDERS = 20_000_000;
+    private static final int START_NUMBER_OF_LEVELS = 10_000;
 
-  // Red black tree are useful when we need insertion and deletion relatively frequent.
-  // Red-black trees are self-balancing so these operations are guaranteed to be O(logn).
-  private final RedBlackTree<BigDecimal> priceLevelTree;
+    // Red black tree are useful when we need insertion and deletion relatively frequent.
+    // Red-black trees are self-balancing so these operations are guaranteed to be O(logn).
+    private final RedBlackTree<BigDecimal> priceLevelTree;
 
-  private final Map<Long, Order> orderMap;
+    private final Map<Long, Order> orderMap;
 
-  private final Map<BigDecimal, PriceLevel> priceLevelMap;
-  private final Comparator<BigDecimal> priceLevelComparator;
-  private RedBlackNode<BigDecimal> topOrderPrice;
+    private final Map<BigDecimal, PriceLevel> priceLevelMap;
+    private final Comparator<BigDecimal> priceLevelComparator;
+    private RedBlackNode<BigDecimal> topOrderPrice;
 
-  TreeOrderBook(Side side) {
-    this.priceLevelComparator =
-        side.equals(Side.ASK) ? Comparator.naturalOrder() : (Comparator<BigDecimal>) Comparator.naturalOrder().reversed();
-    priceLevelTree = new RedBlackTree<>(priceLevelComparator);
-    orderMap = new HashMap<>(START_NUMBER_OF_ORDERS);
-    priceLevelMap = new HashMap<>(START_NUMBER_OF_LEVELS);
-  }
-
-  /**
-   * Adds order on O(1) amortized.
-   * <p>
-   * The amortization is for when no orders on that price range were created yet. In that scenario,  it's O(logn) majored by the insertion
-   * on a RB Tree. Since the number of orders >> number of price ranges in a time window, it's fine to assume O(1) amortized.
-   *
-   * @param order order to be added.
-   */
-  @Override
-  public void addOrder(Order order) {
-    // Get price level
-    PriceLevel orderPriceLevel = priceLevelMap.get(order.getPrice()); // O(1)
-    if (orderPriceLevel == null) {
-      orderPriceLevel = new PriceLevel(order.getPrice());
-      priceLevelMap.put(order.getPrice(), orderPriceLevel);
-      RedBlackNode<BigDecimal> insertedNode = priceLevelTree.insert(orderPriceLevel.price); // O(log(n))
-      if (topOrderPrice == null || priceLevelComparator.compare(topOrderPrice.value, order.getPrice()) > 0) {
-        topOrderPrice = insertedNode;
-      }
+    TreeOrderBook(final Side side) {
+        this.priceLevelComparator =
+            side.equals(Side.ASK) ? Comparator.naturalOrder() : (Comparator<BigDecimal>) Comparator.naturalOrder().reversed();
+        priceLevelTree = new RedBlackTree<>(priceLevelComparator);
+        orderMap = new HashMap<>(START_NUMBER_OF_ORDERS);
+        priceLevelMap = new HashMap<>(START_NUMBER_OF_LEVELS);
     }
-    // Update orders on price level
-    orderPriceLevel.orderSequence.put(order.getId(), order); // O(1)
-    orderMap.put(order.getId(), order); // O(1)
-  }
 
-  /***
-   *  Removes Order with O(1) amortized.
-   *  Whenever the price level is empty, it needs to be removed from the R&B tree - which triggers a Tree search O(logn).
-   *  It's possible to improve this to O(1) - by keeping track of the Tree Nodes and avoiding the search.
-   *  I haven't implemented it due to time constraint.
-   *
-   * @param orderId order id
-   */
-  @Override
-  public void removeOrder(long orderId) {
-    // Remove order
-    final Order removeOrder = orderMap.remove(orderId); // O(1)
-    if (removeOrder != null) {
-      // Remove order from price level
-      final PriceLevel level = priceLevelMap.get(removeOrder.getPrice());
-      level.orderSequence.remove(removeOrder.getId()); // O(1)
-
-      // Cleanup if price level is empty
-      if (level.orderSequence.isEmpty()) {
-        priceLevelTree.remove(level.price); // O(logn)
-        priceLevelMap.remove(level.price); // O(1)
-        if (topOrderPrice.value.equals(level.price)) {
-          updateTopPrice();
+    /**
+     * Adds order on O(1) amortized.
+     * <p>
+     * The amortization is for when no orders on that price range were created yet. In that scenario,  it's O(logn) majored by the insertion
+     * on a RB Tree. Since the number of orders >> number of price ranges in a time window, it's fine to assume O(1) amortized.
+     *
+     * @param order order to be added.
+     */
+    @Override
+    public void addOrder(final Order order) {
+        // Get price level
+        PriceLevel orderPriceLevel = priceLevelMap.get(order.getPrice()); // O(1)
+        if (orderPriceLevel == null) {
+            orderPriceLevel = new PriceLevel(order.getPrice());
+            priceLevelMap.put(order.getPrice(), orderPriceLevel);
+            final RedBlackNode<BigDecimal> insertedNode = priceLevelTree.insert(orderPriceLevel.price); // O(log(n))
+            if (topOrderPrice == null || priceLevelComparator.compare(topOrderPrice.value, order.getPrice()) > 0) {
+                topOrderPrice = insertedNode;
+            }
         }
-      }
+        // Update orders on price level
+        orderPriceLevel.orderSequence.put(order.getId(), order); // O(1)
+        orderMap.put(order.getId(), order); // O(1)
     }
-  }
 
-  private void updateTopPrice() {
-    RedBlackNode<BigDecimal> parent = topOrderPrice.getParent();
-    if (parent == null || parent.value == null) { // last order in the book
-      topOrderPrice = null;
-    } else {
-      topOrderPrice = parent;
+    /***
+     *  Removes Order with O(1) amortized.
+     *  Whenever the price level is empty, it needs to be removed from the R&B tree - which triggers a Tree search O(logn).
+     *  It's possible to improve this to O(1) - by keeping track of the Tree Nodes and avoiding the search.
+     *  I haven't implemented it due to time constraint.
+     *
+     * @param orderId order id
+     */
+    @Override
+    public void removeOrder(final long orderId) {
+        // Remove order
+        final Order removeOrder = orderMap.remove(orderId); // O(1)
+        if (removeOrder != null) {
+            // Remove order from price level
+            final PriceLevel level = priceLevelMap.get(removeOrder.getPrice());
+            level.orderSequence.remove(removeOrder.getId()); // O(1)
+
+            // Cleanup if price level is empty
+            if (level.orderSequence.isEmpty()) {
+                priceLevelTree.remove(level.price); // O(logn)
+                priceLevelMap.remove(level.price); // O(1)
+                if (topOrderPrice.value.equals(level.price)) {
+                    updateTopPrice();
+                }
+            }
+        }
     }
-  }
 
-  /***
-   * Replaces order with O(1).
-   * @param order order to be replaced
-   */
-  @Override
-  public void replaceOrder(final Order order) {
-    Order oldOrder = orderMap.get(order.getId());
-    if (oldOrder != null) {
-      removeOrder(oldOrder.getId());
-      addOrder(order);
+    private void updateTopPrice() {
+        final RedBlackNode<BigDecimal> parent = topOrderPrice.getParent();
+        if (parent == null || parent.value == null) { // last order in the book
+            topOrderPrice = null;
+        } else {
+            topOrderPrice = parent;
+        }
     }
-  }
 
-  /***
-   * Gets top order with O(1) time.
-   * @return top order if any otherwise null if there's no orders in the book
-   */
-  @Override
-  public Order getTopOrder() {
-    return Optional.ofNullable(topOrderPrice)
-        .map(order -> order.value)
-        .map(priceLevelMap::get) // O(1)
-        .map(e -> e.orderSequence).map(Map::values).map(Collection::iterator) // O(1)
-        .map(Iterator::next)
-        .orElse(null);
-  }
+    /***
+     * Replaces order with O(1).
+     * @param order order to be replaced
+     */
+    @Override
+    public void replaceOrder(final Order order) {
+        final Order oldOrder = orderMap.get(order.getId());
+        if (oldOrder != null) {
+            removeOrder(oldOrder.getId());
+            addOrder(order);
+        }
+    }
 
-  /***
-   * Gets size for Price Level with O(1) time
-   *
-   * @param price price level
-   * @return the number of orders in that price level
-   */
-  @Override
-  public long getSizeForPriceLevel(BigDecimal price) {
-    return Optional.ofNullable(priceLevelMap.get(price)) // O(1)
-        .map(s -> s.orderSequence)
-        .map(Map::size)
-        .orElse(0);
-  }
+    /***
+     * Gets top order with O(1) time.
+     * @return top order if any otherwise null if there's no orders in the book
+     */
+    @Override
+    public Order getTopOrder() {
+        return Optional.ofNullable(topOrderPrice)
+            .map(order -> order.value)
+            .map(priceLevelMap::get) // O(1)
+            .map(e -> e.orderSequence).map(Map::values).map(Collection::iterator) // O(1)
+            .map(Iterator::next)
+            .orElse(null);
+    }
 
-  @Override
-  public long getBookDepth() {
-    return priceLevelMap.size();
-  }
+    /***
+     * Gets size for Price Level with O(1) time
+     *
+     * @param price price level
+     * @return the number of orders in that price level
+     */
+    @Override
+    public long getSizeForPriceLevel(final BigDecimal price) {
+        return Optional.ofNullable(priceLevelMap.get(price)) // O(1)
+            .map(s -> s.orderSequence)
+            .map(Map::size)
+            .orElse(0);
+    }
 
-  @Override
-  public boolean containsOrder(long orderId) {
-    return orderMap.containsKey(orderId);
-  }
+    @Override
+    public long getBookDepth() {
+        return priceLevelMap.size();
+    }
 
-  @Override
-  public Order getOrderById(long restingOrderId) {
-    return orderMap.get(restingOrderId);
-  }
+    @Override
+    public boolean containsOrder(final long orderId) {
+        return orderMap.containsKey(orderId);
+    }
+
+    @Override
+    public Order getOrderById(final long restingOrderId) {
+        return orderMap.get(restingOrderId);
+    }
 }

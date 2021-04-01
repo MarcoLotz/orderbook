@@ -2,7 +2,7 @@ package com.marcolotz.orderbook.core.exceptions;
 
 public class InvalidOrderException extends RuntimeException {
 
-  public InvalidOrderException(String message) {
-    super(message);
-  }
+    public InvalidOrderException(final String message) {
+        super(message);
+    }
 }
